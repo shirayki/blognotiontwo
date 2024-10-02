@@ -22,6 +22,7 @@ export default function CustomContextMenu(props) {
 
   const { latestPosts } = props
   const router = useRouter()
+
   /**
    * 随机跳转文章
    */
@@ -39,7 +40,6 @@ export default function CustomContextMenu(props) {
   useEffect(() => {
     const handleContextMenu = (event) => {
       event.preventDefault()
-      // 计算点击位置加菜单宽高是否超出屏幕，如果超出则贴边弹出
       const x = (event.clientX < windowSize.width - width) ? event.clientX : windowSize.width - width
       const y = (event.clientY < windowSize.height - height) ? event.clientY : windowSize.height - height
       setPosition({ y: `${y}px`, x: `${x}px` })
@@ -109,13 +109,24 @@ export default function CustomContextMenu(props) {
     htmlElement.classList?.add(newStatus ? 'dark' : 'light')
   }
 
+  function handleCopyText() {
+    const textToCopy = "这里是要复制的文本" // 自定义要复制的文本内容
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => {
+        console.log('文本已复制')
+      })
+      .catch((error) => {
+        console.error('复制文本失败:', error)
+      })
+    setShow(false)
+  }
+
   return (
         <div
             ref={menuRef}
             style={{ top: position.y, left: position.x }}
             className={`${show ? '' : 'invisible opacity-0'} select-none transition-opacity duration-200 fixed z-50`}
         >
-
             {/* 菜单内容 */}
             <div className='rounded-xl w-52 dark:hover:border-yellow-600 bg-white dark:bg-[#040404] dark:text-gray-200 dark:border-gray-600 p-3 border drop-shadow-lg flex-col duration-300 transition-colors'>
                 {/* 顶部导航按钮 */}
@@ -156,6 +167,12 @@ export default function CustomContextMenu(props) {
                     <div onClick={handleCopyLink} title={locale.MENU.COPY_URL} className='w-full px-2 h-10 flex justify-start items-center flex-nowrap cursor-pointer hover:bg-blue-600 hover:text-white rounded-lg duration-200 transition-all'>
                         <i className="fa-solid fa-arrow-up-right-from-square mr-2" />
                         <div className='whitespace-nowrap'>{locale.MENU.COPY_URL}</div>
+                    </div>
+
+                    {/* 新增复制文本按钮 */}
+                    <div onClick={handleCopyText} title="复制文本" className='w-full px-2 h-10 flex justify-start items-center flex-nowrap cursor-pointer hover:bg-blue-600 hover:text-white rounded-lg duration-200 transition-all'>
+                        <i className="fa-solid fa-copy mr-2" />
+                        <div className='whitespace-nowrap'>复制文本</div>
                     </div>
 
                     <div onClick={handleChangeDarkMode} title={isDarkMode ? locale.MENU.LIGHT_MODE : locale.MENU.DARK_MODE} className='w-full px-2 h-10 flex justify-start items-center flex-nowrap cursor-pointer hover:bg-blue-600 hover:text-white rounded-lg duration-200 transition-all'>
